@@ -91,6 +91,10 @@ const prepareProject = async (options) => {
     verbose,
   } = options;
   const cmdOptions = { silent: !verbose };
+  // ******************
+  await exec.exec('-----------------------------------------------------');
+  await exec.exec('echo $PWD');
+  await exec.exec('-----------------------------------------------------');
 
   const projectImageName = `hexletprojects/${projectMember.project.image_name}:latest`;
   await io.mkdirP(projectSourcePath);
@@ -103,7 +107,7 @@ const prepareProject = async (options) => {
   await exec.exec(copyCmd, null, cmdOptions);
   await io.mkdirP(codePath);
   await io.cp(`${projectPath}/.`, codePath, { recursive: true });
-  await exec.exec('docker', ['build', '--cache-from', projectImageName, '.'], { ...cmdOptions, cwd: projectSourcePath });
+  await exec.exec('docker', ['build', '--cache-from', projectImageName, '--build-arg', 'BUILDKIT_INLINE_CACHE=1', '.'], { ...cmdOptions, cwd: projectSourcePath });
 };
 
 const check = async ({ projectSourcePath, codePath, projectMember }) => {
@@ -118,6 +122,7 @@ const check = async ({ projectSourcePath, codePath, projectMember }) => {
   //   state: 'success',
   // };
   // core.exportVariable('checkState', JSON.stringify(checkState));
+  throw new Error('FAILED');
 };
 
 const runTests = async (params) => {
