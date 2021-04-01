@@ -8,6 +8,7 @@ process.on('unhandledRejection', (up) => { throw up; });
 
 core.exportVariable('COMPOSE_DOCKER_CLI_BUILD', 1);
 core.exportVariable('DOCKER_BUILDKIT', 1);
+core.exportVariable('PWD', process.env.GITHUB_WORKSPACE);
 // core.exportVariable('PWD', process.cwd());
 
 // core.debug(process.cwd());
