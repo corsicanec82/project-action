@@ -92,9 +92,9 @@ const prepareProject = async (options) => {
   } = options;
   const cmdOptions = { silent: !verbose };
   // ******************
-  await exec.exec('-----------------------------------------------------');
+  core.info('-----------------------------------------------------');
   await exec.exec('echo $PWD');
-  await exec.exec('-----------------------------------------------------');
+  core.info('-----------------------------------------------------');
 
   const projectImageName = `hexletprojects/${projectMember.project.image_name}:latest`;
   await io.mkdirP(projectSourcePath);
