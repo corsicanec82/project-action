@@ -95,6 +95,7 @@ const prepareProject = async (options) => {
   core.info('1-----------------------------------------------------');
   await exec.exec('echo $PWD', null, cmdOptions);
   await exec.exec('pwd', null, cmdOptions);
+  await exec.exec('id', null, cmdOptions);
   core.info('-----------------------------------------------------');
 
   const projectImageName = `hexletprojects/${projectMember.project.image_name}:latest`;
