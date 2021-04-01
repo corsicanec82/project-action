@@ -8,7 +8,7 @@ inputs:
   verbose:
     description: 'show me more!'
     required: false
-    default: "false"
+    default: "true"
   mount-path:
     description: 'mount path'
     required: true
@@ -17,4 +17,4 @@ inputs:
 runs:
   using: 'node12'
   main: 'dist/run-tests/index.js'
-  post: 'dist/run-post-actions/index.js'
+  # post: 'dist/run-post-actions/index.js'

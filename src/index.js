@@ -16,70 +16,70 @@ const yaml = require('js-yaml');
 const buildRoutes = require('./routes.js');
 const { checkPackageName } = require('./packageChecker.js');
 
-const uploadArtifacts = async (diffpath) => {
-  if (!fs.existsSync(diffpath)) {
-    return;
-  }
+// const uploadArtifacts = async (diffpath) => {
+//   if (!fs.existsSync(diffpath)) {
+//     return;
+//   }
 
-  const diffstats = fs.statSync(diffpath);
-  if (!diffstats.isDirectory()) {
-    return;
-  }
+//   const diffstats = fs.statSync(diffpath);
+//   if (!diffstats.isDirectory()) {
+//     return;
+//   }
 
-  // https://github.com/actions/toolkit/tree/main/packages/glob
-  const filepaths = fs
-    .readdirSync(diffpath, { withFileTypes: true })
-    .filter((dirent) => dirent.isFile())
-    .map((dirent) => path.join(diffpath, dirent.name));
+//   // https://github.com/actions/toolkit/tree/main/packages/glob
+//   const filepaths = fs
+//     .readdirSync(diffpath, { withFileTypes: true })
+//     .filter((dirent) => dirent.isFile())
+//     .map((dirent) => path.join(diffpath, dirent.name));
 
-  // if (filepaths.length === 0) {
-  //   return;
-  // }
+//   // if (filepaths.length === 0) {
+//   //   return;
+//   // }
 
-  const artifactClient = artifact.create();
-  const artifactName = 'test-results';
-  await artifactClient.uploadArtifact(artifactName, filepaths, diffpath);
-  // NOTE: Users need notification that screenshots have been generated. Not error.
-  core.info(colors.bgYellow.black('Download snapshots from Artifacts.'));
-};
+//   const artifactClient = artifact.create();
+//   const artifactName = 'test-results';
+//   await artifactClient.uploadArtifact(artifactName, filepaths, diffpath);
+//   // NOTE: Users need notification that screenshots have been generated. Not error.
+//   core.info(colors.bgYellow.black('Download snapshots from Artifacts.'));
+// };
 
-const uploadTestData = async (options) => {
-  const { projectSourcePath, verbose } = options;
+// const uploadTestData = async (options) => {
+//   const { projectSourcePath, verbose } = options;
 
-  const specPath = path.join(projectSourcePath, '__data__', 'spec.yml');
+//   const specPath = path.join(projectSourcePath, '__data__', 'spec.yml');
 
-  // NOTE: The project image is not downloaded until the last step is reached.
-  if (!fs.existsSync(specPath)) {
-    return;
-  }
+//   // NOTE: The project image is not downloaded until the last step is reached.
+//   if (!fs.existsSync(specPath)) {
+//     return;
+//   }
 
-  const specContent = fs.readFileSync(specPath).toString();
-  const specData = yaml.load(specContent);
-  const { artifacts } = specData.project;
+//   const specContent = fs.readFileSync(specPath).toString();
+//   const specData = yaml.load(specContent);
+//   const { artifacts } = specData.project;
 
-  if (!artifacts) {
-    return;
-  }
+//   if (!artifacts) {
+//     return;
+//   }
 
-  const existPaths = artifacts.filter((artifactPath) => (
-    fs.existsSync(path.join(projectSourcePath, artifactPath))
-  ));
+//   const existPaths = artifacts.filter((artifactPath) => (
+//     fs.existsSync(path.join(projectSourcePath, artifactPath))
+//   ));
 
-  if (existPaths.length === 0) {
-    return;
-  }
+//   if (existPaths.length === 0) {
+//     return;
+//   }
 
-  const archiveName = 'test-data.zip';
-  const cmdOptions = { silent: !verbose, cwd: projectSourcePath };
-  const command = `zip -r ${archiveName} ${existPaths.join(' ')}`;
-  await exec.exec(command, null, cmdOptions);
+//   const archiveName = 'test-data.zip';
+//   const cmdOptions = { silent: !verbose, cwd: projectSourcePath };
+//   const command = `zip -r ${archiveName} ${existPaths.join(' ')}`;
+//   await exec.exec(command, null, cmdOptions);
 
-  const artifactName = 'test-data';
-  const artifactClient = artifact.create();
-  const archivePath = path.join(projectSourcePath, archiveName);
-  await artifactClient.uploadArtifact(artifactName, [archivePath], projectSourcePath);
-  core.info(colors.bgYellow.black('Download snapshots from Artifacts.'));
-};
+//   const artifactName = 'test-data';
+//   const artifactClient = artifact.create();
+//   const archivePath = path.join(projectSourcePath, archiveName);
+//   await artifactClient.uploadArtifact(artifactName, [archivePath], projectSourcePath);
+//   core.info(colors.bgYellow.black('Download snapshots from Artifacts.'));
+// };
 
 const prepareProject = async (options) => {
   const {
@@ -114,10 +114,10 @@ const check = async ({ projectSourcePath, codePath, projectMember }) => {
   await exec.exec('docker-compose', ['run', 'app', 'make', 'setup'], options);
   await exec.exec('docker-compose', ['-f', 'docker-compose.yml', 'up', '--abort-on-container-exit'], options);
 
-  const checkState = {
-    state: 'success',
-  };
-  core.exportVariable('checkState', JSON.stringify(checkState));
+  // const checkState = {
+  //   state: 'success',
+  // };
+  // core.exportVariable('checkState', JSON.stringify(checkState));
 };
 
 const runTests = async (params) => {
@@ -125,10 +125,10 @@ const runTests = async (params) => {
   const routes = buildRoutes(process.env.ACTION_API_HOST);
   const projectSourcePath = path.join(mountPath, 'source');
   const codePath = path.join(projectSourcePath, 'code');
-  const initialCheckState = {
-    state: 'fail',
-  };
-  core.exportVariable('checkState', JSON.stringify(initialCheckState));
+  // const initialCheckState = {
+  //   state: 'fail',
+  // };
+  // core.exportVariable('checkState', JSON.stringify(initialCheckState));
 
   const link = routes.projectMemberPath(projectMemberId);
   const http = new HttpClient();
@@ -153,37 +153,37 @@ const runTests = async (params) => {
   await check(options);
 };
 
-const finishCheck = async (projectMemberId) => {
-  const { checkState } = process.env;
+// const finishCheck = async (projectMemberId) => {
+//   const { checkState } = process.env;
 
-  const routes = buildRoutes(process.env.ACTION_API_HOST);
-  const http = new HttpClient();
+//   const routes = buildRoutes(process.env.ACTION_API_HOST);
+//   const http = new HttpClient();
 
-  const link = routes.projectMemberCheckPath(projectMemberId);
-  await http.postJson(link, { check: checkState });
-};
+//   const link = routes.projectMemberCheckPath(projectMemberId);
+//   await http.postJson(link, { check: checkState });
+// };
 
 // NOTE: Post actions should be performed regardless of the test completion result.
-const runPostActions = async (params) => {
-  const { mountPath, projectMemberId, verbose } = params;
-  const projectSourcePath = path.join(mountPath, 'source');
+// const runPostActions = async (params) => {
+//   const { mountPath, projectMemberId, verbose } = params;
+//   const projectSourcePath = path.join(mountPath, 'source');
 
-  const diffpath = path.join(
-    mountPath,
-    'source',
-    'tmp',
-    'artifacts',
-  );
+//   const diffpath = path.join(
+//     mountPath,
+//     'source',
+//     'tmp',
+//     'artifacts',
+//   );
 
-  const options = {
-    projectSourcePath,
-    verbose,
-  };
+//   const options = {
+//     projectSourcePath,
+//     verbose,
+//   };
 
-  await core.group('Finish check', () => finishCheck(projectMemberId));
-  await core.group('Upload artifacts', () => uploadArtifacts(diffpath));
-  await core.group('Upload test data', () => uploadTestData(options));
-};
+//   await core.group('Finish check', () => finishCheck(projectMemberId));
+//   await core.group('Upload artifacts', () => uploadArtifacts(diffpath));
+//   await core.group('Upload test data', () => uploadTestData(options));
+// };
 
 module.exports = {
   runTests,
