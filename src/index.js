@@ -187,5 +187,5 @@ const runTests = async (params) => {
 
 module.exports = {
   runTests,
-  runPostActions,
+  // runPostActions,
 };
